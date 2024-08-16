@@ -1,11 +1,14 @@
+const dotenv = require('dotenv');
 const express = require('express');
 const authRoutes = require('./routes/authRoute');
 const eventRoutes = require('./routes/eventRoute');
 const { protect } = require('./middlewares/authMiddleware');
 
-const app = express();
+dotenv.config();
 
+const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
