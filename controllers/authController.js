@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { users } = require('../models/user');
+const sendEmail = require('../utils/emailService');
 
 const register = async (req, res) => {
     const { name, email, password } = req.body;
@@ -12,6 +13,10 @@ const register = async (req, res) => {
 
     const newUser = { id: users.length + 1, name, email, password: hashedPassword, role: 'attendee' };
     users.push(newUser);
+
+    const subject = 'Welcome to Event Management Platform';
+    const text = `Hi ${newUser.name},\n\nThank you for registering on our Virtual Event Platform!\n\nBest regards,\nEvent Management Team`;
+    sendEmail(email, subject, text);
 
     res.status(201).json({ message: 'User registered successfully' });
 };

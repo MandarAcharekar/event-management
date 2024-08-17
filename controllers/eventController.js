@@ -1,4 +1,5 @@
 const { events } = require('../models/Event');
+const sendEmail = require('../utils/emailService');
 
 // Create Event
 const createEvent = (req, res) => {
@@ -45,7 +46,7 @@ const deleteEvent = (req, res) => {
 // Register for Event
 const registerForEvent = (req, res) => {
     const { id } = req.params;
-    const userId = req.user.id; // Assuming req.user is populated by authMiddleware
+    const userId = req.user.id;
 
     const event = events.find(event => event.id === parseInt(id));
     if (!event) return res.status(404).json({ message: 'Event not found' });
@@ -58,6 +59,12 @@ const registerForEvent = (req, res) => {
     // Add user to participants list
     event.participants.push(userId);
     res.json({ message: 'User registered for event', event });
+
+    const user = req.user;
+
+    const subject = `Registration Confirmation for Event: ${event.description}`;
+    const text = `Hi ${req.user.name},\n\nYou have successfully registered for the event "${event.description}" on ${event.date} at ${event.time}.\n\nBest regards,\nEvent Management Team`;
+    sendEmail(req.user.email, subject, text);
 };
 
 module.exports = {
